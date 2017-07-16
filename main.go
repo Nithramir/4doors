@@ -23,20 +23,6 @@ func handle_err(err error) {
 	}
 }
 
-/*func (p *Page) save() error {
-	filename := p.Title + ".txt"
-	return ioutil.WriteFile(filename, p.Body, 0600)
-}
-*/
-/*func loadPage(title string) (*Page, error) {
-	filename := title + ".txt"
-	body, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
-	return &Page{Title: title, Body: body}, nil
-}*/
-
 func create_salle(w http.ResponseWriter, r *http.Request) {
 	id_act := r.FormValue("id_act")
 	num_room := r.FormValue("num_room")
@@ -47,14 +33,17 @@ func create_salle(w http.ResponseWriter, r *http.Request) {
 	} else {
 		print("formulaires bien rentrés, je les insère magueul")
 	}
-	create_room(database, "string", "yolo", "swag")
+	create_room(database, id_act, xav_code, num_room)
 	fmt.Fprintf(w, "ok")
 }
 
 func get_salle(w http.ResponseWriter, r *http.Request) {
 	id_need := r.FormValue("id")
-	xav_code := get_room(database, id_need)
-	fmt.Fprintf(w, string(xav_code))
+	xav_code, err := get_room(database, id_need)
+	if err != nil {
+		fmt.Fprintf(w, "Id error")
+	}
+	fmt.Fprintf(w, xav_code)
 }
 
 func editHandler(w http.ResponseWriter, r *http.Request) {
@@ -66,8 +55,7 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	database = init_database("root", "1234")
-	get_room(database, "1")
-	http.HandleFunc("/view/", get_salle)
+	http.HandleFunc("/get_salle/", get_salle)
 	http.HandleFunc("/edit/", editHandler)
 	http.HandleFunc("/create_salle/", create_salle)
 	http.ListenAndServe(":8080", nil)

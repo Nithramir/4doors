@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 )
 
@@ -27,17 +28,16 @@ func create_room(db *sql.DB, id_act string, xav_doc string, num_salle string) {
 	handle_err(err)
 }
 
-func get_room(db *sql.DB, id_need string) string {
+func get_room(db *sql.DB, id_need string) (string, error) {
 	request := "SELECT xav_doc FROM " + table_name + " WHERE id = '" + id_need + "';"
 	rows, err := db.Query(request)
 	handle_err(err)
 	defer rows.Close()
 	for rows.Next() {
-		var name string
-		err := rows.Scan(&name)
+		var code string
+		err := rows.Scan(&code)
 		handle_err(err)
-		fmt.Printf("%s\n", name)
+		return code, nil
 	}
-	return "ok"
-
+	return "", errors.New("id not found")
 }

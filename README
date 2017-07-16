@@ -1,0 +1,8 @@
+Pour ajouter une salle dans la base de donnee:
+http://localhost:8080/create_salle/
+Avec en form method, "id_act" l'id actuelle de la case
+"num_room", qui peut etre 1 2 3 ou 4, pour savoir ou ajouter la room,
+et "xav_code" pour ta classe/tableau ce que tu veux serialiser.
+Pour recuperer ton code, 
+http://localhost:8080/get_salle/
+Avec en form method "id" qui est l'id de la salle que tu veux.
