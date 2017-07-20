@@ -5,7 +5,10 @@ Avec en form method:
  -"num_room", qui peut etre 1 2 3 ou 4, pour savoir ou ajouter la room,
  -"xav_code" pour ta classe/tableau ce que tu veux serialiser.
  -"titre" qui est le titre de la room
+ -"uploadfile" de type FILE
 
 Pour recuperer ton code, 
 http://localhost:8080/get_salle/:
 Avec en form method "id" qui est l'id de la salle que tu veux.
+ça retourne un fichier json avec tous les champs.Go tester 
+une requete pour voir ce que ça donne.

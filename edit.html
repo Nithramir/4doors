@@ -3,6 +3,10 @@
 
 <form enctype="multipart/form-data" action="/create_salle/" method="POST">
 <input type="file" name="uploadfile" />
+<textarea name="id_act" rows="2" cols="80">id_act</textarea>
+<textarea name="num_room" rows="2" cols="80">num_room</textarea>
+<textarea name="xav_code" rows="2" cols="80">xav_code</textarea>
+<textarea name="titre" rows="2" cols="80">titre</textarea>
     <input type="hidden" name="token" value="{{.}}"/>
 	    <input type="submit" value="upload" />
 </form>

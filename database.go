@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"mime/multipart"
 	"strconv"
 )
 
@@ -21,6 +23,7 @@ type room_type struct {
 	Bouton2 bouton
 	Bouton3 bouton
 	Bouton4 bouton
+	Image   []byte
 }
 
 func init_database(db_user string, db_passw string) *sql.DB {
@@ -38,36 +41,46 @@ func init_database(db_user string, db_passw string) *sql.DB {
 	return db
 }
 
-func create_room(db *sql.DB, id_act string, Xav_doc string, num_salle string, Titre string) {
-	request := "INSERT INTO " + table_name + "(date, Xav_doc, Titre) VALUES(NOW(), '" + Xav_doc + "', '" + Titre + "');"
+func create_room(db *sql.DB, id_act string, Xav_doc string, num_salle string, Titre string, img multipart.File, image_name string) {
+	if img != nil {
+		file, _ := ioutil.ReadAll(img)
+		err := ioutil.WriteFile("./img/"+image_name, file, 0644)
+		handle_err(err)
+		fmt.Println(string(file))
+	}
+	request := "INSERT INTO " + table_name + "(date, Xav_doc, Titre, image) VALUES(NOW(), '" + Xav_doc + "', '" + Titre + "', './img/" + image_name + "');"
 	print(request)
 	print("\n")
 	req, err := db.Query(request)
 	handle_err(err)
 	req.Close()
 	handle_err(err)
-	request = "UPDATE " + table_name + " SET salle" + num_salle + " = (SELECT ID FROM (SELECT MAX(ID) AS ID from " + table_name + ") AS ID) WHERE ID = 1" + id_act + ";"
+	request = "UPDATE " + table_name + " SET salle" + num_salle + " = (SELECT ID FROM (SELECT MAX(ID) AS ID from " + table_name + ") AS ID) WHERE ID = " + id_act + ";"
 	print(request)
 	req, err = db.Query(request)
 	handle_err(err)
 	defer req.Close()
-	print("test\n")
 }
 
 func get_room(db *sql.DB, id_need string) (room_type, error) {
 
 	var room room_type
-	request := "SELECT ID, Good, Bad, Titre, Xav_doc, salle1, salle2, salle3, salle4 FROM " + table_name + " WHERE id = '" + id_need + "';"
+	var file_name string
+	request := "SELECT ID, image, Good, Bad, Titre, Xav_doc, salle1, salle2, salle3, salle4 FROM " + table_name + " WHERE id = '" + id_need + "';"
+	print(request)
 	rows, err := db.Query(request)
 	handle_err(err)
 	for rows.Next() {
-		err := rows.Scan(&room.ID, &room.Good, &room.Bad, &room.Titre, &room.Xav_doc, &room.Bouton1.ID, &room.Bouton2.ID, &room.Bouton3.ID, &room.Bouton4.ID)
+		err := rows.Scan(&room.ID, &file_name, &room.Good, &room.Bad, &room.Titre, &room.Xav_doc, &room.Bouton1.ID, &room.Bouton2.ID, &room.Bouton3.ID, &room.Bouton4.ID)
 		rows.Close()
 		handle_err(err)
 		room.Bouton1.Titre = get_Titre(db, room.Bouton1.ID)
 		room.Bouton2.Titre = get_Titre(db, room.Bouton2.ID)
 		room.Bouton3.Titre = get_Titre(db, room.Bouton3.ID)
 		room.Bouton4.Titre = get_Titre(db, room.Bouton4.ID)
+		room.Image, err = ioutil.ReadFile(file_name)
+		handle_err(err)
+		fmt.Println(string(room.Image))
 		print("\nroom\n")
 		fmt.Println(room)
 		return room, nil

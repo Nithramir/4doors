@@ -39,24 +39,27 @@ func create_salle(w http.ResponseWriter, r *http.Request) {
 	titre := r.FormValue("titre")
 	print("ok\n")
 	r.ParseMultipartForm(32 << 20)
-	img, header, err := r.FormFile("uploadfile")
-	handle_err(err)
+	img, header, _ := r.FormFile("uploadfile")
 	fmt.Println(header.Filename)
-	fmt.Println(reflect.TypeOf(num_room))
+	fmt.Println(reflect.TypeOf(img))
+	fmt.Println(img)
+	f, err := ioutil.ReadAll(img)
+	fmt.Println(string(f))
+	handle_err(err)
 	if (xav_code == "") || (id_act == "") || (num_room == "") || (titre == "") || (img == nil) {
 		print("Erreur les formulaires envoyés")
 	} else {
 		print("formulaires bien rentrés, je les insère magueul\n")
+		create_room(database, id_act, xav_code, num_room, titre, img, header.Filename)
+		fmt.Fprintf(w, "ok")
 	}
-	create_room(database, id_act, xav_code, num_room, titre)
-	fmt.Fprintf(w, "ok")
 }
 
 func get_salle(w http.ResponseWriter, r *http.Request) {
 	print("get_salle")
-	//id_need := r.FormValue("id")
+	id_need := r.FormValue("id")
 	var room room_type
-	room, _ = get_room(database, "1")
+	room, _ = get_room(database, id_need)
 	b, err := json.Marshal(room)
 	handle_err(err)
 	if err != nil {
@@ -100,7 +103,7 @@ func main() {
 		Entier int
 	}
 	database = init_database("root", "1234")
-	create_room(database, "3", "swagman", "2", "bat-room")
+	create_room(database, "3", "swagman", "2", "bat-room", nil, "name")
 
 	http.HandleFunc("/get_salle/", get_salle)
 	http.HandleFunc("/edit/", editHandler)
