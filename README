@@ -21,3 +21,14 @@ http://localhost:8080/can_modify/
  -"id_room" id de la room
  -"password" le mot de passe de la room
  return "ok" ou "pasok"
+
+
+Pour edit une salle:
+http://localhost:8080/edit/
+ -"password"
+ -"id_room"
+ -"xav_code"
+ -"titre"
+ -"uploadfile"" de type FILE
+Tu peux envoyer un ou plusieurs élements parmis "xavcode titre et uploadfile" !
+ Retourne "ok" ou "pasok"

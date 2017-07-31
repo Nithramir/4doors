@@ -71,10 +71,22 @@ func get_salle(w http.ResponseWriter, r *http.Request) {
 
 func editHandler(w http.ResponseWriter, r *http.Request) {
 	//	title := r.URL.Path[len("/edit/"):]
-	p, _ := ioutil.ReadFile("edit.html")
-	print(p)
+	password := r.FormValue("password")
+	id_room := r.FormValue("id_room")
+	if password_ok(id_room, password, database) == 1 {
+		fmt.Fprintf(w, "ok")
+		xav_code := r.FormValue("xav_code")
+		titre := r.FormValue("titre")
+		r.ParseMultipartForm(32 << 20)
+		img, header, _ := r.FormFile("uploadfile")
 
-	fmt.Fprintf(w, string(p))
+		edit_room(titre, id_room, database, header.Filename, img, xav_code)
+
+		fmt.Fprintf(w, "ok")
+
+	} else {
+		fmt.Fprintf(w, "pasok")
+	}
 }
 
 func imgHandler(w http.ResponseWriter, r *http.Request) {
