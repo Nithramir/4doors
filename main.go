@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
 	"image"
 	"image/color"
 	"image/draw"
@@ -16,6 +15,8 @@ import (
 	_ "os"
 	"reflect"
 	_ "strconv"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 const (
@@ -50,8 +51,8 @@ func create_salle(w http.ResponseWriter, r *http.Request) {
 		print("Erreur les formulaires envoyés")
 	} else {
 		print("formulaires bien rentrés, je les insère magueul\n")
-		create_room(database, id_act, xav_code, num_room, titre, img, header.Filename)
-		fmt.Fprintf(w, "ok")
+		pass := create_room(database, id_act, xav_code, num_room, titre, img, header.Filename)
+		fmt.Fprintf(w, pass)
 	}
 }
 
@@ -96,16 +97,25 @@ func imgHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func can_modify(w http.ResponseWriter, r *http.Request) {
+
+	password := r.FormValue("password")
+	id_room := r.FormValue("id_room")
+	if password_ok(id_room, password, database) == 1 {
+		fmt.Fprintf(w, "ok")
+	} else {
+		fmt.Fprintf(w, "pasok")
+	}
+
+}
+
 func main() {
 
-	type Test struct {
-		Chaine string
-		Entier int
-	}
 	database = init_database("root", "1234")
 	create_room(database, "3", "swagman", "2", "bat-room", nil, "name")
 
 	http.HandleFunc("/get_salle/", get_salle)
+	http.HandleFunc("/can_modify/", can_modify)
 	http.HandleFunc("/edit/", editHandler)
 	http.HandleFunc("/create_salle/", create_salle)
 	http.HandleFunc("/img/", imgHandler)

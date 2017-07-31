@@ -6,9 +6,18 @@ Avec en form method:
  -"xav_code" pour ta classe/tableau ce que tu veux serialiser.
  -"titre" qui est le titre de la room
  -"uploadfile" de type FILE
+Cette méthode retourne le mot de passe de la salle (que tu stockes et qui servira pour effectuer des modifs sur la salle)
+
 
 Pour recuperer ton code, 
-http://localhost:8080/get_salle/:
+http://localhost:8080/get_salle/
 Avec en form method "id" qui est l'id de la salle que tu veux.
 ça retourne un fichier json avec tous les champs.Go tester 
 une requete pour voir ce que ça donne.
+
+
+Savoir si l'utilisateur a le bon mot de passe pour une room:
+http://localhost:8080/can_modify/
+ -"id_room" id de la room
+ -"password" le mot de passe de la room
+ return "ok" ou "pasok"

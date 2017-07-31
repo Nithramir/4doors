@@ -41,14 +41,15 @@ func init_database(db_user string, db_passw string) *sql.DB {
 	return db
 }
 
-func create_room(db *sql.DB, id_act string, Xav_doc string, num_salle string, Titre string, img multipart.File, image_name string) {
+func create_room(db *sql.DB, id_act string, Xav_doc string, num_salle string, Titre string, img multipart.File, image_name string) string {
 	if img != nil {
 		file, _ := ioutil.ReadAll(img)
 		err := ioutil.WriteFile("./img/"+image_name, file, 0644)
 		handle_err(err)
 		fmt.Println(string(file))
 	}
-	request := "INSERT INTO " + table_name + "(date, Xav_doc, Titre, image) VALUES(NOW(), '" + Xav_doc + "', '" + Titre + "', './img/" + image_name + "');"
+	pass := string(randSeq(10))
+	request := "INSERT INTO " + table_name + "(date, Xav_doc, Titre, image, passwd) VALUES(NOW(), '" + Xav_doc + "', '" + Titre + "', './img/" + image_name + "',  MD5('" + pass + "') );"
 	print(request)
 	print("\n")
 	req, err := db.Query(request)
@@ -60,6 +61,7 @@ func create_room(db *sql.DB, id_act string, Xav_doc string, num_salle string, Ti
 	req, err = db.Query(request)
 	handle_err(err)
 	defer req.Close()
+	return pass
 }
 
 func get_room(db *sql.DB, id_need string) (room_type, error) {
